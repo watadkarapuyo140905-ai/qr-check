@@ -137,22 +137,31 @@ function(decodedText) {
     "?code=" +
     encodeURIComponent(decodedText);
 
-  fetch(sendUrl, {
-    method: "GET",
-    mode: "no-cors",
-    cache: "no-store"
-  })
-  .then(function() {
+const img = new Image();
 
-    document.getElementById("result").innerHTML =
-      "✅ ていしゅつしました！<br><br>" +
-      "つぎのQRをどうぞ";
+img.onload = function() {
 
-    setTimeout(function() {
-      processing = false;
-    }, 1500);
+  document.getElementById("result").innerHTML =
+    "✅ ていしゅつしました！<br><br>" +
+    "つぎのQRをどうぞ";
 
-  })
+  setTimeout(function() {
+    processing = false;
+  }, 1500);
+
+};
+
+img.onerror = function() {
+
+  document.getElementById("result").innerHTML =
+    "⚠️ きろくできませんでした";
+
+  processing = false;
+
+};
+
+img.src = sendUrl + "&t=" + Date.now();
+  
   .catch(function(error) {
 
     document.getElementById("result").innerHTML =
