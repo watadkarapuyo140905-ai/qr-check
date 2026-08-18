@@ -64,6 +64,12 @@ const scanner = new Html5Qrcode("reader");
 let processing = false;
 
 
+/* 個人GoogleアカウントのApps Script */
+
+const appsScriptUrl =
+  "https://script.google.com/macros/s/AKfycbyD_PVjnzVW28vNbduCNUgZJclL4OV1WqaspoFZpnLAQDtAc9QyPtyF3pz5k4o-xLg/exec";
+
+
 /* カメラを起動 */
 
 async function startCamera() {
@@ -119,17 +125,21 @@ async function startCamera() {
 
         processing = true;
 
+
         document.getElementById("result").innerHTML =
           "ていしゅつをきろくしています…";
 
 
         /*
-         * 個人GoogleアカウントのApps Script
+         * QRの中身
+         *
+         * 例：
+         * 1k
+         * 2k
+         * 15k
+         *
+         * をApps Scriptへ送る
          */
-
-        const appsScriptUrl =
-          "https://script.google.com/macros/s/AKfycbyD_PVjnzVW28vNbduCNUgZJclL4OV1WqaspoFZpnLAQDtAc9QyPtyF3pz5k4o-xLg/exec";
-
 
         const sendUrl =
           appsScriptUrl +
@@ -137,30 +147,32 @@ async function startCamera() {
           encodeURIComponent(decodedText);
 
 
-        /*
-         * Apps Scriptへ送信
-         */
-
         fetch(sendUrl, {
           method: "GET",
           mode: "no-cors",
           cache: "no-store"
         })
+
         .then(function() {
 
           document.getElementById("result").innerHTML =
             "✅ ていしゅつしました！<br><br>" +
             "つぎのQRをどうぞ";
 
+
           setTimeout(function() {
+
             processing = false;
+
           }, 1500);
 
         })
+
         .catch(function(error) {
 
           document.getElementById("result").innerHTML =
             "⚠️ きろくできませんでした";
+
 
           processing = false;
 
