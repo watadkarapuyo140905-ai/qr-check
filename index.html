@@ -1,107 +1,175 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QRカメラテスト</title>
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>ていしゅつチェック</title>
 
   <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
+
     body {
       font-family: sans-serif;
       text-align: center;
+      margin: 0;
       padding: 20px;
+      background: #f7f7f7;
+    }
+
+    h1 {
+      font-size: 28px;
     }
 
     #reader {
       width: 100%;
       max-width: 500px;
       margin: 20px auto;
+      background: white;
     }
 
     #result {
-      font-size: 22px;
       margin-top: 20px;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      font-size: 22px;
+      font-weight: bold;
     }
+
   </style>
+
 </head>
+
 
 <body>
 
-<h1>QRカメラテスト</h1>
+<h1>ていしゅつチェック</h1>
 
 <div id="reader"></div>
 
 <div id="result">
-  カメラを起動しています…
+  QRコードをうつしてください
 </div>
+
 
 <script>
 
 const scanner = new Html5Qrcode("reader");
 
+let processing = false;
+
+
+/* カメラを起動 */
+
 async function startCamera() {
 
   try {
 
-    // 使用できるカメラを取得
     const cameras = await Html5Qrcode.getCameras();
 
     if (!cameras || cameras.length === 0) {
       throw new Error("カメラが見つかりません");
     }
 
-    // 背面カメラを探す
+
+    /* 背面カメラを探す */
+
     let backCamera = cameras.find(camera =>
       /back|rear|environment|背面|後ろ/i.test(camera.label)
     );
 
-    // 見つからなければ最後のカメラを使用
+
+    /* 見つからない場合は最後のカメラ */
+
     if (!backCamera) {
       backCamera = cameras[cameras.length - 1];
     }
 
+
     document.getElementById("result").innerHTML =
       "背面カメラを起動しています…";
 
+
     await scanner.start(
+
       backCamera.id,
+
       {
         fps: 10,
+
         qrbox: {
           width: 250,
           height: 250
         }
       },
+
+
+      /* QR読み取り成功 */
+
       function(decodedText) {
+
+        if (processing) {
+          return;
+        }
+
+        processing = true;
+
 
         document.getElementById("result").innerHTML =
           "読み取り成功！<br><br>" +
           decodedText;
 
+
+        /*
+          1秒後に再び読み取り可能にする
+        */
+
+        setTimeout(function() {
+
+          processing = false;
+
+          document.getElementById("result").innerHTML =
+            "つぎのQRコードをどうぞ";
+
+        }, 1500);
+
       },
+
+
+      /* QR読み取り失敗は無視 */
+
       function(errorMessage) {
-        // 読み取り中のエラーは無視
+
       }
+
     );
 
+
     document.getElementById("result").innerHTML =
-      "背面カメラ起動中<br>QRコードをうつしてください";
+      "📷 背面カメラ起動中<br><br>" +
+      "QRコードをうつしてください";
+
 
   } catch (error) {
 
     document.getElementById("result").innerHTML =
-      "カメラを起動できませんでした<br><br>" +
+      "⚠️ カメラを起動できませんでした<br><br>" +
       error;
 
   }
 
 }
 
+
 startCamera();
 
 </script>
 
 </body>
+
 </html>
