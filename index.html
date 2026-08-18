@@ -120,17 +120,47 @@ function(decodedText) {
   processing = true;
 
   document.getElementById("result").innerHTML =
-    "読み取り成功！<br><br>" +
-    decodedText;
+    "ていしゅつをきろくしています…";
 
-  setTimeout(function() {
+  /*
+   * QRの中身
+   * 例：1k
+   *
+   * をApps Scriptへ送る
+   */
+
+  const appsScriptUrl =
+    "https://script.google.com/a/macros/ome-tky.ed.jp/s/AKfycbwR3c_9jMWddjkOY1eJ7ZV_-dr4UGwFrhwDVUIoPY_O4Zy8mq_OkhlYXG78nQwIeNjmcA/exec";
+
+  const sendUrl =
+    appsScriptUrl +
+    "?code=" +
+    encodeURIComponent(decodedText);
+
+  fetch(sendUrl, {
+    method: "GET",
+    mode: "no-cors",
+    cache: "no-store"
+  })
+  .then(function() {
 
     document.getElementById("result").innerHTML =
-      "つぎのQRコードをどうぞ";
+      "✅ ていしゅつしました！<br><br>" +
+      "つぎのQRをどうぞ";
+
+    setTimeout(function() {
+      processing = false;
+    }, 1500);
+
+  })
+  .catch(function(error) {
+
+    document.getElementById("result").innerHTML =
+      "⚠️ きろくできませんでした";
 
     processing = false;
 
-  }, 1500);
+  });
 
 },
 
