@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QRカメラテスト</title>
+
+  <script src="https://unpkg.com/html5-qrcode"></script>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+
+    #reader {
+      width: 100%;
+      max-width: 500px;
+      margin: 20px auto;
+    }
+
+    #result {
+      font-size: 22px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>QRカメラテスト</h1>
+
+<div id="reader"></div>
+
+<div id="result">
+  カメラを起動しています…
+</div>
+
+<script>
+
+const scanner = new Html5Qrcode("reader");
+
+async function startCamera() {
+
+  try {
+
+    // 使用できるカメラを取得
+    const cameras = await Html5Qrcode.getCameras();
+
+    if (!cameras || cameras.length === 0) {
+      throw new Error("カメラが見つかりません");
+    }
+
+    // 背面カメラを探す
+    let backCamera = cameras.find(camera =>
+      /back|rear|environment|背面|後ろ/i.test(camera.label)
+    );
+
+    // 見つからなければ最後のカメラを使用
+    if (!backCamera) {
+      backCamera = cameras[cameras.length - 1];
+    }
+
+    document.getElementById("result").innerHTML =
+      "背面カメラを起動しています…";
+
+    await scanner.start(
+      backCamera.id,
+      {
+        fps: 10,
+        qrbox: {
+          width: 250,
+          height: 250
+        }
+      },
+      function(decodedText) {
+
+        document.getElementById("result").innerHTML =
+          "読み取り成功！<br><br>" +
+          decodedText;
+
+      },
+      function(errorMessage) {
+        // 読み取り中のエラーは無視
+      }
+    );
+
+    document.getElementById("result").innerHTML =
+      "背面カメラ起動中<br>QRコードをうつしてください";
+
+  } catch (error) {
+
+    document.getElementById("result").innerHTML =
+      "カメラを起動できませんでした<br><br>" +
+      error;
+
+  }
+
+}
+
+startCamera();
+
+</script>
+
+</body>
+</html>
