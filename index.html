@@ -111,34 +111,28 @@ async function startCamera() {
 
       /* QR読み取り成功 */
 
-      function(decodedText) {
+function(decodedText) {
 
-        if (processing) {
-          return;
-        }
+  if (processing) {
+    return;
+  }
 
-        processing = true;
+  processing = true;
 
+  document.getElementById("result").innerHTML =
+    "読み取り成功！<br><br>" +
+    decodedText;
 
-        document.getElementById("result").innerHTML =
-          "読み取り成功！<br><br>" +
-          decodedText;
+  setTimeout(function() {
 
+    document.getElementById("result").innerHTML =
+      "つぎのQRコードをどうぞ";
 
-        /*
-          1秒後に再び読み取り可能にする
-        */
+    processing = false;
 
-        setTimeout(function() {
+  }, 1500);
 
-          processing = false;
-
-          document.getElementById("result").innerHTML =
-            "つぎのQRコードをどうぞ";
-
-        }, 1500);
-
-      },
+},
 
 
       /* QR読み取り失敗は無視 */
