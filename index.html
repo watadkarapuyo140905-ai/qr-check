@@ -141,16 +141,43 @@ async function startCamera() {
          */
 
         const sendUrl =
-          appsScriptUrl +
-          "?code=" +
-          encodeURIComponent(decodedText);
+  appsScriptUrl +
+  "?code=" +
+  encodeURIComponent(decodedText);
 
+fetch(sendUrl, {
+  method: "GET",
+  cache: "no-store"
+})
 
-       document.getElementById("result").innerHTML =
-  "送信先：<br><br>" +
-  sendUrl;
+.then(function(response) {
 
-        .then(function() {
+  return response.text();
+
+})
+
+.then(function(result) {
+
+  document.getElementById("result").innerHTML =
+    result + "<br><br>つぎのQRをどうぞ";
+
+  setTimeout(function() {
+
+    processing = false;
+
+  }, 1500);
+
+})
+
+.catch(function(error) {
+
+  document.getElementById("result").innerHTML =
+    "⚠️ きろくできませんでした<br><br>" +
+    error;
+
+  processing = false;
+
+});
 
           document.getElementById("result").innerHTML =
             "✅ ていしゅつしました！<br><br>" +
