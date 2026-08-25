@@ -67,7 +67,8 @@ let processing = false;
 /* 個人GoogleアカウントのApps Script */
 
 const appsScriptUrl =
-  "https://script.google.com/macros/s/AKfycbzXMI9fdgnuNDL8oDYJqAM4Bace_pbV8w7nMzs4rE_QoLLq8w9EvanxtJiHl-fCOv52/exec";
+  "https://script.google.com/macros/s/AKfycbyD_PVjnzVW28vNbduCNUgZJclL4OV1WqaspoFZpnLAQDtAc9QyPtyF3pz5k4o-xLg/exec";
+
 
 /* カメラを起動 */
 
@@ -141,43 +142,18 @@ async function startCamera() {
          */
 
         const sendUrl =
-  appsScriptUrl +
-  "?code=" +
-  encodeURIComponent(decodedText);
+          appsScriptUrl +
+          "?code=" +
+          encodeURIComponent(decodedText);
 
-fetch(sendUrl, {
-  method: "GET",
-  cache: "no-store"
-})
 
-.then(function(response) {
+        fetch(sendUrl, {
+          method: "GET",
+          mode: "no-cors",
+          cache: "no-store"
+        })
 
-  return response.text();
-
-})
-
-.then(function(result) {
-
-  document.getElementById("result").innerHTML =
-    result + "<br><br>つぎのQRをどうぞ";
-
-  setTimeout(function() {
-
-    processing = false;
-
-  }, 1500);
-
-})
-
-.catch(function(error) {
-
-  document.getElementById("result").innerHTML =
-    "⚠️ きろくできませんでした<br><br>" +
-    error;
-
-  processing = false;
-
-});
+        .then(function() {
 
           document.getElementById("result").innerHTML =
             "✅ ていしゅつしました！<br><br>" +
