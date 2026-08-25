@@ -146,10 +146,9 @@ async function startCamera() {
           encodeURIComponent(decodedText);
 
 
-        fetch(sendUrl, {
-          method: "GET",
-          cache: "no-store"
-        })
+       document.getElementById("result").innerHTML =
+  "送信先：<br><br>" +
+  sendUrl;
 
         .then(function() {
 
