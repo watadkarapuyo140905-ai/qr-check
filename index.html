@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -64,7 +65,7 @@ const scanner = new Html5Qrcode("reader");
 let processing = false;
 
 
-/* 個人GoogleアカウントのApps Script */
+/* Apps Script */
 
 const appsScriptUrl =
   "https://script.google.com/macros/s/AKfycbyD_PVjnzVW28vNbduCNUgZJclL4OV1WqaspoFZpnLAQDtAc9QyPtyF3pz5k4o-xLg/exec";
@@ -97,21 +98,18 @@ async function startCamera() {
     }
 
 
-    document.getElementById("result").innerHTML =
-      "背面カメラを起動しています…";
-
-
     await scanner.start(
 
       backCamera.id,
 
       {
-        fps: 10,
+        fps: 15,
 
         qrbox: {
           width: 250,
           height: 250
         }
+
       },
 
 
@@ -126,57 +124,51 @@ async function startCamera() {
         processing = true;
 
 
+        /*
+         * QRを読み取ったら
+         * すぐ次のQRを読める状態にする
+         */
+
         document.getElementById("result").innerHTML =
-          "ていしゅつをきろくしています…";
+          "✅ ていしゅつしました！<br><br>" +
+          "つぎのQRをどうぞ";
 
 
         /*
-         * QRの中身
+         * Apps Scriptへ送信
          *
-         * 例：
-         * 1k
-         * 2k
-         * 15k
-         *
-         * をApps Scriptへ送る
+         * 結果を待たずに次へ進む
          */
 
         const sendUrl =
           appsScriptUrl +
           "?code=" +
-          encodeURIComponent(decodedText);
+          encodeURIComponent(decodedText) +
+          "&t=" +
+          Date.now();
 
 
         fetch(sendUrl, {
           method: "GET",
           mode: "no-cors",
           cache: "no-store"
-        })
+        }).catch(function(error) {
 
-        .then(function() {
+          console.log("送信エラー:", error);
 
-          document.getElementById("result").innerHTML =
-            "✅ ていしゅつしました！<br><br>" +
-            "つぎのQRをどうぞ";
+        });
 
 
-          setTimeout(function() {
+        /*
+         * 同じQRを連続で読み取らないための
+         * 最小限の待ち時間
+         */
 
-            processing = false;
-
-          }, 1500);
-
-        })
-
-        .catch(function(error) {
-
-          document.getElementById("result").innerHTML =
-            "⚠️ きろくできませんでした";
-
+        setTimeout(function() {
 
           processing = false;
 
-        });
+        }, 500);
 
       },
 
@@ -191,7 +183,7 @@ async function startCamera() {
 
 
     document.getElementById("result").innerHTML =
-      "📷 背面カメラ起動中<br><br>" +
+      "📷 カメラ起動中<br><br>" +
       "QRコードをうつしてください";
 
 
@@ -213,3 +205,4 @@ startCamera();
 </body>
 
 </html>
+```
