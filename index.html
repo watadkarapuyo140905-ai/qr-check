@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -71,6 +70,50 @@ const appsScriptUrl =
   "https://script.google.com/macros/s/AKfycbyD_PVjnzVW28vNbduCNUgZJclL4OV1WqaspoFZpnLAQDtAc9QyPtyF3pz5k4o-xLg/exec";
 
 
+/* 「ピッ！」という音を作る */
+
+let audioContext = null;
+
+function beep() {
+
+  try {
+
+    if (!audioContext) {
+      audioContext =
+        new (window.AudioContext ||
+             window.webkitAudioContext)();
+    }
+
+    const oscillator =
+      audioContext.createOscillator();
+
+    const gain =
+      audioContext.createGain();
+
+    oscillator.type = "sine";
+
+    oscillator.frequency.value = 1200;
+
+    gain.gain.value = 0.15;
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+
+    oscillator.start();
+
+    oscillator.stop(
+      audioContext.currentTime + 0.08
+    );
+
+  } catch (error) {
+
+    console.log("音を鳴らせませんでした:", error);
+
+  }
+
+}
+
+
 /* カメラを起動 */
 
 async function startCamera() {
@@ -124,9 +167,13 @@ async function startCamera() {
         processing = true;
 
 
+        /* QRを読み取った瞬間に「ピッ！」 */
+
+        beep();
+
+
         /*
-         * QRを読み取ったら
-         * すぐ次のQRを読める状態にする
+         * 毎回ここを表示し直す
          */
 
         document.getElementById("result").innerHTML =
@@ -205,4 +252,3 @@ startCamera();
 </body>
 
 </html>
-```
